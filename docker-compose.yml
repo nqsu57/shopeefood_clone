@@ -1,0 +1,23 @@
+# version: '28.0.4'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  db:
+    container_name: some_postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 0507
+      POSTGRES_DB: shopeefood
+    volumes:
+      - ./backend/app/db:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
