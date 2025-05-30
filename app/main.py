@@ -1,10 +1,9 @@
 from fastapi import FastAPI
-from app.database.database import Base, engine
-from app.api.register import router
+from database.database import Base, engine, DATABASE_URL
+from api.register import router
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
 # @app.get("/")
 # async def root():
 #     return {"message": "Hello S3"}
