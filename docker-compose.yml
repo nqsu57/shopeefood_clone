@@ -3,26 +3,24 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
-    volumes:
-      # - ./backend:/app
-      - ./app:/app  
+      - "8000:8000" 
     environment:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=postgresql://admin:0507@db:5432/shopeefood
 
   db:
     container_name: some_postgres
-    image: postgres
+    image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 0507
-      POSTGRES_DB: shopeefood
+      - POSTGRES_PASSWORD=0507
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=shopeefood
+      - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "4406:5432"
 
 volumes:
   postgres_data:
