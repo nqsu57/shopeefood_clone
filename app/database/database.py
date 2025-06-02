@@ -11,10 +11,6 @@ print(f"DEBUG = {debug}")
 # DATABASE_URL="postgresql://admin:0507@localhost:4406/shopeefood"
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set")
- 
-
-
-   
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

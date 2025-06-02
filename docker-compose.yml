@@ -7,6 +7,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=postgresql://admin:0507@db:5432/shopeefood
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    
 
   db:
     container_name: some_postgres
