@@ -22,3 +22,6 @@ dist/
 build/
 app/db/
 backend
+
+# PostgreSQL data folder
+postgres-data/
