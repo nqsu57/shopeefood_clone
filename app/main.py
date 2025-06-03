@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.database.database import Base, engine, DATABASE_URL
 from app.api.register import router
+from app.api.login import login_router
 from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
@@ -17,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix="/api")
+app.include_router(login_router, prefix="/api")
