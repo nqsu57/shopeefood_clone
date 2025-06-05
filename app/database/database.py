@@ -3,6 +3,12 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 load_dotenv(dotenv_path=".env")
 DATABASE_URL = os.getenv("DATABASE_URL")
 debug = os.getenv("DEBUG") == "True"
