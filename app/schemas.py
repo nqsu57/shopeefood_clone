@@ -17,3 +17,8 @@ class UserOut(BaseModel):
     # full_name: str
     phone: str
     email: EmailStr
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str

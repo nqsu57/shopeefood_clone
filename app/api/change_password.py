@@ -5,13 +5,8 @@ from sqlalchemy.orm import Session
 from app.model.user import User  # Model ORM
 from app.database.database import get_db
 from app.core.security import get_current_user, verify_password, hash_password
-
+from app.schemas import PasswordChangeRequest
 change_password_user = APIRouter()
-
-class PasswordChangeRequest(BaseModel):
-    current_password: str
-    new_password: str = Field(min_length=6)
-    confirm_password: str
 
 @change_password_user.put("/users/change_password_user")
 def change_password(
