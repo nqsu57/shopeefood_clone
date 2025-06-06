@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
+    name: str
     phone: str
     email: EmailStr
     password: str
@@ -8,13 +9,14 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     phone: str
+    name: str
     email: EmailStr
 
     class Config:
         orm_mode = True
 
 class UserOut(BaseModel):
-    # full_name: str
+    name: str
     phone: str
     email: EmailStr
 

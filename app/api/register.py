@@ -23,7 +23,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Phone already registered")
 
     hashed_pw = pwd_context.hash(user.password)
-    new_user = User(phone=user.phone, email=user.email, hashed_password=hashed_pw)
+    new_user = User(name=user.name, phone=user.phone, email=user.email, hashed_password=hashed_pw)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

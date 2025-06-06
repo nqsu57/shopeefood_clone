@@ -15,12 +15,12 @@ def change_password(
     current_user: User = Depends(get_current_user),
 ):
     if not verify_password(data.current_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Mật khẩu hiện tại không đúng")
+        raise HTTPException(status_code=400, detail="The current password is incorrect")
 
     if data.new_password != data.confirm_password:
-        raise HTTPException(status_code=400, detail="Mật khẩu mới không khớp")
+        raise HTTPException(status_code=400, detail="The new passwords do not match.")
 
     current_user.hashed_password = hash_password(data.new_password)
     db.commit()
 
-    return {"message": "Cập nhật mật khẩu thành công"}
+    return {"message": "Password updated successfully"}
