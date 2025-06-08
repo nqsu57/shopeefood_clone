@@ -7,4 +7,5 @@ class User(Base):
     name = Column(String, index=True, nullable=False)
     phone = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
+    gender = Column(String, default="Default")
     hashed_password = Column(String, nullable=False)

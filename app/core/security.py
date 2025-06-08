@@ -7,11 +7,20 @@ from app.model.user import User
 from app.database.database import get_db
 from sqlalchemy.orm import Session
 from app.schemas import UserOut
+from app.database.database import SessionLocal
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def verify_password(plain, hashed):
     return pwd_context.verify(plain, hashed)
