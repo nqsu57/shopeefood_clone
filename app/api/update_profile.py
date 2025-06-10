@@ -48,9 +48,8 @@ def update_profile(
                 detail="New passwords do not match."
             )
 
-        current_user.password = pwd_context.hash(update.new_password)
+        current_user.hashed_password = pwd_context.hash(update.new_password)
         updated = True
-
     if updated:
         db.commit()
         db.refresh(current_user)

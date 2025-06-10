@@ -6,8 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from app.model.user import User
 from app.database.database import get_db
 from sqlalchemy.orm import Session
-from app.schemas import UserOut
+# from app.schemas import UserOut
 from app.database.database import SessionLocal
+from typing import Generator
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "your-secret-key"
@@ -15,7 +17,7 @@ ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
