@@ -17,6 +17,7 @@ class UserResponse(BaseModel):
         orm_mode = True
 
 class UserOut(BaseModel):
+    id: int
     name: str
     phone: str
     email: EmailStr
@@ -29,3 +30,6 @@ class UserUpdate(BaseModel):
     current_password: Optional[str] = None
     new_password: Optional[str] = None
     confirm_password: Optional[str] = None
+
+class AvatarUpdate(BaseModel):
+    avatar_url: str
