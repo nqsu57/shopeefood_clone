@@ -22,6 +22,7 @@ class UserOut(BaseModel):
     phone: str
     email: EmailStr
     gender: str
+    avatar_url: str | None = None
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None

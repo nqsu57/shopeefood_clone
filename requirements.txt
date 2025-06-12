@@ -11,3 +11,6 @@ pydantic[email]
 email-validator
 python-multipart
 bcrypt
+fastapi-mail
+request
+httpx
