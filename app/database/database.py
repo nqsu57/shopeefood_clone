@@ -2,6 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
+# from sqlalchemy.future import select
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from app.model.user import User
 
 def get_db():
     db = SessionLocal()
@@ -21,3 +24,18 @@ if not DATABASE_URL:
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# # Change password via email
+# async def get_user_by_email(db: AsyncSession, email: str):
+#     result = await db.execute(select(User).where(User.email == email))
+#     return result.scalars().first()
+
+# async def update_user_password(db: AsyncSession, email: str, new_hashed_password: str):
+#     result = await db.execute(select(User).where(User.email == email))
+#     user = result.scalars().first()
+#     if user:
+#         user.hashed_password = new_hashed_password
+#         await db.commit()
+#         await db.refresh(user)
+#         return user
+#     return None

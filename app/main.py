@@ -7,6 +7,8 @@ from app.api.avatar import avatar_update
 # from app.api.change_password import change_password_user
 from app.api.update_profile import update_profile_router
 from fastapi.middleware.cors import CORSMiddleware
+# from app.api.send_email import forgot_password_router
+# from app.api.send_email import reset_password_router
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -26,6 +28,9 @@ app.include_router(login_router, prefix="/api")
 app.include_router(get_user, prefix="/api")
 app.include_router(update_profile_router, prefix="/api")
 app.include_router(avatar_update, prefix="/api")
+# app.include_router(forgot_password_router, prefix="/api")
+# app.include_router(reset_password_router, prefix="/api")
+
 # app.include_router(change_password_user, prefix="/api")
 
 

@@ -12,5 +12,5 @@ email-validator
 python-multipart
 bcrypt
 fastapi-mail
-request
+requests
 httpx
