@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.core.security import get_current_user
-from app.schemas import UserOut
+from app.schemas.user import UserOut
 from app.model.user import User
 
 get_user = APIRouter()

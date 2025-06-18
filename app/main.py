@@ -8,6 +8,7 @@ from app.api.avatar import avatar_update
 from app.api.update_profile import update_profile_router
 from app.api.foods import foods, detail_food
 from fastapi.middleware.cors import CORSMiddleware
+import app.model
 # from app.api.send_email import forgot_password_router
 # from app.api.send_email import reset_password_router
 

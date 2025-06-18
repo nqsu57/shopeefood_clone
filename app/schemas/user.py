@@ -35,11 +35,3 @@ class UserUpdate(BaseModel):
 class AvatarUpdate(BaseModel):
     avatar_url: str
 
-class Food(BaseModel):
-    id: int
-    name: str
-    price: int
-    image: str
-
-    class Config:
-        orm_mode = True

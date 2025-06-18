@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from app.schemas import AvatarUpdate
+from app.schemas.user import AvatarUpdate
 from app.database.database import get_db
 from app.model.user import User
 from sqlalchemy.orm import Session

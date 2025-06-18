@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,  HTTPException, Path
 from typing import List
-from app.schemas import Food as FoodSchema
+from app.schemas.food import FoodOut as FoodOut
 from app.model.food import Food as FoodModel
 from app.database.database import get_db
 from sqlalchemy.orm import Session
@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 foods = APIRouter()
 detail_food = APIRouter()
 
-@foods.get("/foods", response_model=List[FoodSchema])
+@foods.get("/foods", response_model=List[FoodOut])
 def get_foods(db: Session = Depends(get_db)):
     # return [
     #     Food(id=1,name="Bún bò Huế",price=40000,image="https://down-tx-vn.img.susercontent.com/vn-11134513-7r98o-lsu0q1909dj890@resize_ss640x400!@crop_w640_h400_cT"),
@@ -20,7 +20,7 @@ def get_foods(db: Session = Depends(get_db)):
     # ]
     return db.query(FoodModel).all()
 
-@detail_food.get("/food/{food_id}", response_model=FoodSchema)
+@detail_food.get("/food/{food_id}", response_model=FoodOut)
 def get_food_by_id(food_id: int = Path(..., gt=0), db: Session = Depends(get_db)): 
     food = db.query(FoodModel).filter(FoodModel.id == food_id).first()
     if not food:

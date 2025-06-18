@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.security import get_db, get_current_user
 from app.model.user import User
-from app.schemas import UserUpdate
+from app.schemas.user import UserUpdate
 from passlib.context import CryptContext
 
 update_profile_router = APIRouter()
