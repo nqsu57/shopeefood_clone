@@ -25,4 +25,6 @@ def get_food_by_id(food_id: int = Path(..., gt=0), db: Session = Depends(get_db)
     food = db.query(FoodModel).filter(FoodModel.id == food_id).first()
     if not food:
         raise HTTPException(status_code=404, detail="Food not found")
+    if food.sizes:
+        food.price = None
     return food
