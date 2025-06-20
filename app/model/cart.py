@@ -1,0 +1,29 @@
+from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from app.database.database import Base
+
+class CartItem(Base):
+    __tablename__ = "cart_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    food_id = Column(Integer, ForeignKey("food.id"))
+    quantity = Column(Integer)
+    selected_size_id = Column(Integer, ForeignKey("food_sizes.id"), nullable=True)
+    note = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="cart_items")
+    food = relationship("Food")
+    selected_size = relationship("FoodSize")
+    toppings = relationship("CartItemTopping", back_populates="cart_item", cascade="all, delete-orphan")
+
+class CartItemTopping(Base):
+    __tablename__ = "cart_item_toppings"
+
+    cart_item_id = Column(Integer, ForeignKey("cart_items.id"), primary_key=True)
+    topping_id = Column(Integer, ForeignKey("food_toppings.id"), primary_key=True)
+
+    cart_item = relationship("CartItem", back_populates="toppings")
+    topping = relationship("FoodTopping")
