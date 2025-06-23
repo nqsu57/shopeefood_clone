@@ -24,3 +24,7 @@ def create_cart_item(db: Session, user_id: int, item: CartItemCreate):
 
     db.commit()
     return cart_item
+
+
+def get_cart_items(db: Session, user_id: int):
+    return db.query(CartItem).filter(CartItem.user_id == user_id).all()

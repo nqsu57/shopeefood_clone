@@ -15,7 +15,7 @@ class CartItem(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="cart_items")
-    food = relationship("Food")
+    food = relationship("Food", back_populates="cart_items")
     selected_size = relationship("FoodSize")
     toppings = relationship("CartItemTopping", back_populates="cart_item", cascade="all, delete-orphan")
 

@@ -14,6 +14,7 @@ class Food(Base):
     restaurant = relationship("Restaurant", back_populates="foods")
     sizes = relationship("FoodSize", back_populates="food")
     toppings = relationship("FoodTopping", back_populates="food")
+    cart_items = relationship("CartItem", back_populates="food")
 
 
 
