@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.model import CartItem, CartItemTopping
+from app.model.cart import CartItem, CartItemTopping
 from app.schemas.cart import CartItemCreate
 
 def create_cart_item(db: Session, user_id: int, item: CartItemCreate):
@@ -23,8 +23,13 @@ def create_cart_item(db: Session, user_id: int, item: CartItemCreate):
         db.add(cart_item_topping)
 
     db.commit()
+    # db.refresh(cart_item)
     return cart_item
 
 
 def get_cart_items(db: Session, user_id: int):
-    return db.query(CartItem).filter(CartItem.user_id == user_id).all()
+    cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
+    for item in cart_items:
+        item.toppings_list = [t.topping for t in item.toppings]
+
+    return cart_items

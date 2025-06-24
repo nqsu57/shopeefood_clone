@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class CartItemCreate(BaseModel):
@@ -41,7 +41,9 @@ class CartItemOut(BaseModel):
 
     food: FoodInfo
     selected_size: Optional[SizeInfo]
-    toppings: List[ToppingInfo] = []
+    # toppings: List[ToppingInfo] = []
+    toppings: List[ToppingInfo] = Field(..., alias="toppings_list")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True 
