@@ -33,6 +33,9 @@ class ToppingInfo(BaseModel):
     class Config:
         orm_mode = True
 
+class UpdateQuantity(BaseModel):
+    quantity: int
+
 class CartItemOut(BaseModel):
     id: int
     quantity: int
@@ -42,7 +45,9 @@ class CartItemOut(BaseModel):
     food: FoodInfo
     selected_size: Optional[SizeInfo]
     # toppings: List[ToppingInfo] = []
-    toppings: List[ToppingInfo] = Field(..., alias="toppings_list")
+    # toppings: List[ToppingInfo] = Field(..., alias="toppings_list")
+    toppings: List[ToppingInfo] = []
+
 
     class Config:
         orm_mode = True
