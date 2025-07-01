@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from app.database.database import Base
 from sqlalchemy.orm import relationship
 
+
 class Food(Base):
     __tablename__ = "food"
     id = Column(Integer, primary_key=True, index=True)
@@ -24,7 +25,7 @@ class FoodSize(Base):
     id = Column(Integer, primary_key=True, index=True)
     food_id = Column(Integer, ForeignKey("food.id"))
     name = Column(String)
-    price = Column(Float)
+    price = Column(Float, nullable=False)
 
     food = relationship("Food", back_populates="sizes")
 
@@ -35,6 +36,11 @@ class FoodTopping(Base):
     id = Column(Integer, primary_key=True, index=True)
     food_id = Column(Integer, ForeignKey("food.id"))
     name = Column(String)
-    price = Column(Float)
+    price = Column(Float, nullable=False)
 
     food = relationship("Food", back_populates="toppings")
+    # cart_items = relationship(
+    #     "CartItem",
+    #     secondary="cart_item_toppings",
+    #     back_populates="toppings"
+    # )

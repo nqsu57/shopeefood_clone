@@ -1,11 +1,14 @@
 from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime, Table, MetaData
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
 from app.database.database import Base
 
 class CartItem(Base):
     __tablename__ = "cart_items"
-
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    food_id: Mapped[int] = mapped_column(ForeignKey("food.id"))
+    food: Mapped["Food"] = relationship(back_populates="cart_items")
+    
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     food_id = Column(Integer, ForeignKey("food.id"))
