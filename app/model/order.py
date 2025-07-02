@@ -7,13 +7,19 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
     payment_method = Column(String, default="COD")
     shipping_fee = Column(Integer, default=0)
     total = Column(Float, default=0)
+    status = Column(String, default="pending")
+
+
+    address_id = Column(Integer, ForeignKey("addresses.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+
 
     user = relationship("User")
     items = relationship("OrderItem", back_populates="order", cascade="all, delete")
+    address = relationship("Address", back_populates="orders")
 
 order_item_topping_table = Table(
     'order_item_toppings',

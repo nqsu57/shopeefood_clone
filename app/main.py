@@ -9,6 +9,7 @@ from app.api.update_profile import update_profile_router
 from app.api.foods import foods, detail_food
 from app.api.cart import cart_router
 from app.api.order_router import order_router
+from app.api.address import address_router
 from fastapi.middleware.cors import CORSMiddleware
 import app.model
 # from app.api.send_email import forgot_password_router
@@ -36,6 +37,7 @@ app.include_router(foods, prefix="/api")
 app.include_router(detail_food, prefix="/api")
 app.include_router(cart_router, prefix="/api")
 app.include_router(order_router, prefix="/api")
+app.include_router(address_router, prefix="/api")
 
 
 

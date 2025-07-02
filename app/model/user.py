@@ -13,3 +13,4 @@ class User(Base):
     avatar_url = Column(String, nullable=True)
 
     cart_items = relationship("CartItem", back_populates="user")
+    addresses = relationship("Address", back_populates="user")
