@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.model.address import Province, District, Ward, Address
 from app.schemas.address import AddressCreate
 
@@ -14,10 +14,17 @@ def get_wards_by_district(db: Session, district_id: int):
     return db.query(Ward).filter(Ward.district_id == district_id).all()
 
 
-
 def get_addresses(db: Session, user_id: int):
-    return db.query(Address).filter(Address.user_id == user_id).all()
-
+    return (
+        db.query(Address)
+        .options(
+            joinedload(Address.province),
+            joinedload(Address.district),
+            joinedload(Address.ward)
+        )
+        .filter(Address.user_id == user_id)
+        .all()
+    )
 
 def create_address(db: Session, user_id: int, address: AddressCreate):
     is_first = db.query(Address).filter(Address.user_id == user_id).count() == 0
@@ -29,12 +36,43 @@ def create_address(db: Session, user_id: int, address: AddressCreate):
         province_id=address.province_id,
         district_id=address.district_id,
         ward_id=address.ward_id,
+        label=address.label,
         is_default=address.is_default if address.is_default else is_first
     )
     db.add(new_address)
     db.commit()
     db.refresh(new_address)
-    return new_address
+
+    # Truy vấn lại để lấy đầy đủ thông tin quan hệ
+    return (
+        db.query(Address)
+        .options(
+            joinedload(Address.province),
+            joinedload(Address.district),
+            joinedload(Address.ward)
+        )
+        .filter(Address.id == new_address.id)
+        .first()
+    )
+
+def update_address(db: Session, user_id: int, address_id: int, data: AddressCreate):
+    addr = db.query(Address).filter(
+        Address.id == address_id, Address.user_id == user_id
+    ).first()
+    if not addr:
+        return None
+
+    addr.recipient_name = data.recipient_name
+    addr.phone_number = data.phone_number
+    addr.address_line = data.address_line
+    addr.province_id = data.province_id
+    addr.district_id = data.district_id
+    addr.ward_id = data.ward_id
+    addr.label = data.label
+    db.commit()
+    db.refresh(addr)
+    return addr
+
 
 
 def delete_address(db: Session, user_id: int, address_id: int):

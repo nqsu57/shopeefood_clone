@@ -4,7 +4,7 @@ from app.database.database import get_db
 from sqlalchemy.orm import Session
 from app.crud import address as crud_address
 from typing import List
-from app.schemas.address import ProvinceOut, DistrictOut, WardOut, AddressOut, AddressCreate
+from app.schemas.address import ProvinceOut, DistrictOut, WardOut, AddressOut, AddressCreate, ProvinceWithDistricts, DistrictWithWards
 from app.core.security import get_current_user
 from app.model.user import User
 
@@ -12,12 +12,12 @@ from app.model.user import User
 
 address_router = APIRouter()
 
-@address_router.get("/provinces", response_model=List[ProvinceOut])
+@address_router.get("/provinces", response_model=List[ProvinceWithDistricts])
 def read_provinces(db: Session = Depends(get_db)):
     return crud_address.get_provinces(db)
 
 
-@address_router.get("/provinces/{province_id}/districts", response_model=List[DistrictOut])
+@address_router.get("/provinces/{province_id}/districts", response_model=List[DistrictWithWards])
 def read_districts(province_id: int, db: Session = Depends(get_db)):
     return crud_address.get_districts_by_province(db, province_id)
 
@@ -44,6 +44,14 @@ def create_address(
 ):
     return crud_address.create_address(db, current_user.id, address)
 
+@address_router.put("/address/{address_id}", response_model=AddressOut)
+def update_address(
+    address_id: int,
+    address: AddressCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return crud_address.update_address(db, current_user.id, address_id, address)
 
 @address_router.delete("/address/{address_id}")
 def delete_address(

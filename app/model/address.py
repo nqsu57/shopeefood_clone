@@ -11,6 +11,7 @@ class Address(Base):
     recipient_name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     address_line = Column(String, nullable=False)   # Số nhà, tên đường
+    label = Column(String, nullable=True)
 
     province_id = Column(Integer, ForeignKey("provinces.id"))
     district_id = Column(Integer, ForeignKey("districts.id"))
