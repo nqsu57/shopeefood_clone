@@ -28,6 +28,9 @@ def get_addresses(db: Session, user_id: int):
 
 def create_address(db: Session, user_id: int, address: AddressCreate):
     is_first = db.query(Address).filter(Address.user_id == user_id).count() == 0
+    if address.is_default or is_first:
+        db.query(Address).filter(Address.user_id == user_id).update({Address.is_default: False})
+
     new_address = Address(
         user_id=user_id,
         recipient_name=address.recipient_name,
@@ -37,7 +40,7 @@ def create_address(db: Session, user_id: int, address: AddressCreate):
         district_id=address.district_id,
         ward_id=address.ward_id,
         label=address.label,
-        is_default=address.is_default if address.is_default else is_first
+        is_default=address.is_default or is_first
     )
     db.add(new_address)
     db.commit()
@@ -62,6 +65,9 @@ def update_address(db: Session, user_id: int, address_id: int, data: AddressCrea
     if not addr:
         return None
 
+    if data.is_default:
+        db.query(Address).filter(Address.user_id == user_id).update({Address.is_default: False})
+
     addr.recipient_name = data.recipient_name
     addr.phone_number = data.phone_number
     addr.address_line = data.address_line
@@ -69,6 +75,8 @@ def update_address(db: Session, user_id: int, address_id: int, data: AddressCrea
     addr.district_id = data.district_id
     addr.ward_id = data.ward_id
     addr.label = data.label
+    addr.is_default = data.is_default or addr.is_default
+
     db.commit()
     db.refresh(addr)
     return addr
@@ -86,8 +94,14 @@ def delete_address(db: Session, user_id: int, address_id: int):
 
 
 def set_default_address(db: Session, user_id: int, address_id: int):
-    addresses = db.query(Address).filter(Address.user_id == user_id).all()
-    for addr in addresses:
-        addr.is_default = addr.id == address_id
+    addr = db.query(Address).filter(Address.id == address_id, Address.user_id == user_id).first()
+    if not addr:
+        return {"detail": "Address not found"}
+
+    db.query(Address).filter(Address.user_id == user_id).update({Address.is_default: False})
+
+    addr.is_default = True
     db.commit()
-    return db.query(Address).filter(Address.user_id == user_id).all()
+    db.refresh(addr)
+
+    return {"detail": "Default address updated", "address_id": addr.id}
