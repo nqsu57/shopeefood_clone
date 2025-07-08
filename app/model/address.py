@@ -6,16 +6,16 @@ class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     recipient_name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     address_line = Column(String, nullable=False)   # Số nhà, tên đường
     label = Column(String, nullable=True)
 
-    province_id = Column(Integer, ForeignKey("provinces.id"))
-    district_id = Column(Integer, ForeignKey("districts.id"))
-    ward_id = Column(Integer, ForeignKey("wards.id"))
+    province_id = Column(Integer, ForeignKey("provinces.id"), nullable=False)
+    district_id = Column(Integer, ForeignKey("districts.id"), nullable=False)
+    ward_id = Column(Integer, ForeignKey("wards.id"), nullable=False)
 
     is_default = Column(Boolean, default=False)
 

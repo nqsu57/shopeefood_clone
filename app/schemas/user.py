@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from  .address import AddressOut
 
 class UserCreate(BaseModel):
     name: str
@@ -23,6 +24,8 @@ class UserOut(BaseModel):
     email: EmailStr
     gender: str
     avatar_url: str | None = None
+    default_address: Optional[AddressOut] = None
+
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
