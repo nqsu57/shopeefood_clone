@@ -33,10 +33,6 @@ def get_user_info(
         .first()
     )
 
-    # lọc ra địa chỉ mặc định
-#     default_address = next(
-#     (addr for addr in user.addresses if getattr(addr, 'is_default', False)), None
-# )
     default_address = (
         db.query(Address)
             .filter(Address.user_id == user.id, Address.is_default == True)
@@ -47,7 +43,7 @@ def get_user_info(
             )
             .first()
         )
-    # trả về dict
+
     return {
         "id": user.id,
         "name": user.name,
