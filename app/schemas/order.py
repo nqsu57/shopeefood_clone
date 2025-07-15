@@ -9,3 +9,4 @@ class OrderCreate(BaseModel):
     payment_method: str
     shipping_fee: Optional[int] = 0
     note: Optional[str] = ""
+    address_id: int

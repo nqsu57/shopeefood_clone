@@ -17,6 +17,29 @@ def create_cart_item(
     food = db.query(Food).filter(Food.id == item.food_id).first()
     if not food:
         raise HTTPException(status_code=404, detail="Food not found")
+    
+    
+     # NEW: Kiểm tra & xử lý nhà hàng khác
+    existing_cart_items = db.query(CartItem).join(Food).filter(
+        CartItem.user_id == user_id
+    ).all()
+
+    if existing_cart_items:
+        existing_restaurant_id = existing_cart_items[0].food.restaurant_id
+        new_restaurant_id = food.restaurant_id
+        
+
+        if existing_restaurant_id != new_restaurant_id:
+            if not item.clear_cart:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Giỏ hàng đang chứa món từ nhà hàng khác. Gửi lại yêu cầu với clear_cart=True để xoá giỏ hàng và thêm món mới."
+                )
+            else:
+                # Xoá giỏ hàng
+                for ci in existing_cart_items:
+                    db.delete(ci)
+                db.commit()
 
     # Kiểm tra size nếu có
     if item.selected_size_id:

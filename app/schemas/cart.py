@@ -7,7 +7,8 @@ class CartItemCreate(BaseModel):
     selected_size_id: Optional[int] = None
     topping_ids: Optional[List[int]] = []
     note: Optional[str] = None
-
+    clear_cart: Optional[bool] = False
+    
 class FoodInfo(BaseModel):
     id: int
     name: str

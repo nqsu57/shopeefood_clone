@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from app.database.database import Base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 
 class Food(Base):
@@ -11,7 +11,9 @@ class Food(Base):
     image = Column(String, nullable=False)
     description = Column(String, nullable=False)
     
-    restaurant_id = Column(Integer, ForeignKey("restaurants.id"), nullable=False)
+    restaurant_id: int = Column(Integer, ForeignKey("restaurants.id"), nullable=False)
+   
+    # restaurant_id: Mapped[int] = mapped_column(ForeignKey("restaurants.id"), nullable=False) 
     restaurant = relationship("Restaurant", back_populates="foods")
     sizes = relationship("FoodSize", back_populates="food")
     toppings = relationship("FoodTopping", back_populates="food")
