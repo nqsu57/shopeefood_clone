@@ -60,3 +60,19 @@ def delete_cart_item(
         db, user_id=current_user.id, cart_item_id=cart_item_id
     )
     return {"detail": "Cart item deleted"}
+
+# @cart_router.delete("/cart/clear")
+# def clear_cart(user_id: int, db: Session = Depends(get_db)):
+#     # Xóa tất cả các món trong giỏ hàng của người dùng
+#     db.query(CartItem).filter(CartItem.user_id == user_id).delete()
+#     db.commit()
+#     return {"message": "Giỏ hàng đã được xóa"}
+
+@cart_router.post("/cart/confirm-clear")
+def confirm_clear_cart(user_id: int, db: Session = Depends(get_db)):
+    # Xóa tất cả các món trong giỏ hàng của người dùng
+    db.query(CartItem).filter(CartItem.user_id == user_id).delete()
+    db.commit()
+
+    # Trả về thông báo xác nhận
+    return {"message": "Giỏ hàng đã được xóa, bạn có thể thêm món ăn mới từ nhà hàng khác."}
