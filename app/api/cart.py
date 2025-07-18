@@ -69,10 +69,7 @@ def delete_cart_item(
 #     return {"message": "Giỏ hàng đã được xóa"}
 
 @cart_router.post("/cart/confirm-clear")
-def confirm_clear_cart(user_id: int, db: Session = Depends(get_db)):
-    # Xóa tất cả các món trong giỏ hàng của người dùng
-    db.query(CartItem).filter(CartItem.user_id == user_id).delete()
+def confirm_clear_cart(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db.query(CartItem).filter(CartItem.user_id == current_user.id).delete()
     db.commit()
-
-    # Trả về thông báo xác nhận
     return {"message": "Giỏ hàng đã được xóa, bạn có thể thêm món ăn mới từ nhà hàng khác."}

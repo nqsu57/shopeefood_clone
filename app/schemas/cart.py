@@ -14,6 +14,7 @@ class FoodInfo(BaseModel):
     name: str
     image: Optional[str]
     price: Optional[int]
+    restaurant_id: int
 
     class Config:
         orm_mode = True

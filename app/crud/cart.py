@@ -1,8 +1,9 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.model.cart import CartItem
 from app.model.food import FoodTopping, FoodSize, Food
 from app.schemas.cart import CartItemCreate
 from fastapi import HTTPException
+from app.model.restaurant import Restaurant
 
 
 def toppings_match(existing_item: CartItem, new_topping_ids: list[int]) -> bool:
@@ -96,32 +97,51 @@ def create_cart_item(db: Session, user_id: int, item: CartItemCreate) -> CartIte
     food = db.query(Food).filter(Food.id == item.food_id).first()
     if not food:
         raise HTTPException(status_code=404, detail="Món ăn không tồn tại")
-
+    
+    # Lấy thông tin nhà hàng của món mới
+    new_restaurant = db.query(Restaurant).filter(Restaurant.id == food.restaurant_id).first()
+    if not new_restaurant:
+        raise HTTPException(status_code=404, detail="Nhà hàng không tồn tại")
+    
     # Kiểm tra giỏ hàng hiện tại của người dùng
     existing_cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
 
     if existing_cart_items:
-        # Kiểm tra tính nhất quán của nhà hàng
-        restaurant_ids = set()
+        # Kiểm tra nhà hàng của các món trong giỏ hàng
+        existing_restaurant_id = None
         for ci in existing_cart_items:
             food_in_cart = db.query(Food).filter(Food.id == ci.food_id).first()
             if not food_in_cart:
-                raise HTTPException(status_code=404, detail=f"Món ăn với ID {ci.food_id} không tồn tại trong giỏ hàng")
-            restaurant_ids.add(food_in_cart.restaurant_id)
-        
-        # Nếu giỏ hàng chứa món từ nhiều nhà hàng, trả về yêu cầu xác nhận xóa
-        if len(restaurant_ids) > 1:
-            return {"message": "Giỏ hàng chứa món từ nhiều nhà hàng. Vui lòng xác nhận để xóa giỏ hàng nếu muốn thêm món ăn từ nhà hàng khác."}
+                # Xóa món không hợp lệ khỏi giỏ hàng
+                db.delete(ci)
+                continue
+            if existing_restaurant_id is None:
+                existing_restaurant_id = food_in_cart.restaurant_id
+            elif existing_restaurant_id != food_in_cart.restaurant_id:
+                # Xóa toàn bộ giỏ hàng nếu phát hiện nhiều nhà hàng (ràng buộc 1 nhà hàng)
+                db.query(CartItem).filter(CartItem.user_id == user_id).delete()
+                db.commit()
+                existing_cart_items = []
+                break
 
-        # Nếu giỏ hàng đã có món từ cùng một nhà hàng
-        existing_restaurant_id = restaurant_ids.pop()
-        new_restaurant_id = food.restaurant_id
+        # Nếu giỏ hàng vẫn còn món, kiểm tra nhà hàng
+        if existing_cart_items:
+            existing_restaurant = db.query(Restaurant).filter(Restaurant.id == existing_restaurant_id).first()
+            if existing_restaurant_id != food.restaurant_id:
+                if not item.clear_cart:
+                    # Trả về thông báo yêu cầu xác nhận xóa giỏ hàng
+                    return {
+                        "message": f"Giỏ hàng hiện chứa món từ nhà hàng '{existing_restaurant.name}'. Bạn có muốn xóa giỏ hàng để thêm món từ nhà hàng '{new_restaurant.name}'?",
+                        "clear_cart_required": True,
+                        "existing_restaurant": {"id": existing_restaurant.id, "name": existing_restaurant.name},
+                        "new_restaurant": {"id": new_restaurant.id, "name": new_restaurant.name}
+                    }
+                else:
+                    # Xóa giỏ hàng nếu clear_cart=True
+                    db.query(CartItem).filter(CartItem.user_id == user_id).delete()
+                    db.commit()
 
-        # Nếu món ăn mới đến từ nhà hàng khác, trả về yêu cầu xác nhận xóa
-        if existing_restaurant_id != new_restaurant_id:
-            return {"message": "Giỏ hàng chứa món từ nhà hàng khác. Vui lòng xác nhận để xóa giỏ hàng nếu muốn thêm món ăn từ nhà hàng khác."}
-
-    # Kiểm tra size nếu có
+    # Kiểm tra size nếu có  
     if item.selected_size_id:
         size = db.query(FoodSize).filter(FoodSize.id == item.selected_size_id).first()
         if not size:
@@ -170,8 +190,15 @@ def create_cart_item(db: Session, user_id: int, item: CartItemCreate) -> CartIte
     return new_cart_item
 
 
+# def get_cart_items(db: Session, user_id: int):
+#     return db.query(CartItem).filter(CartItem.user_id == user_id).all()
+
 def get_cart_items(db: Session, user_id: int):
-    return db.query(CartItem).filter(CartItem.user_id == user_id).all()
+    return db.query(CartItem).options(
+        joinedload(CartItem.food),
+        joinedload(CartItem.selected_size),
+        joinedload(CartItem.toppings)
+    ).filter(CartItem.user_id == user_id).all()
 
 
 def update_cart_item_quantity(db: Session, user_id: int, cart_item_id: int, quantity: int):
@@ -205,3 +232,29 @@ def delete_cart_item(db: Session, user_id: int, cart_item_id: int):
     db.delete(cart_item)
     db.commit()
     return True
+
+def get_cart_summary(db: Session, user_id: int):
+    cart_items = db.query(CartItem).options(
+        joinedload(CartItem.food),
+        joinedload(CartItem.selected_size),
+        joinedload(CartItem.toppings)
+    ).filter(CartItem.user_id == user_id).all()
+
+    total_items = sum(item.quantity for item in cart_items)
+    total_price = 0
+    restaurant = None
+
+    for item in cart_items:
+        food_price = item.food.price or 0
+        size_price = item.selected_size.price if item.selected_size else 0
+        topping_price = sum(topping.price for topping in item.toppings)
+        total_price += (food_price + size_price + topping_price) * item.quantity
+        if item.food.restaurant_id and not restaurant:
+            restaurant = db.query(Restaurant).filter(Restaurant.id == item.food.restaurant_id).first()
+
+    return {
+        "total_items": total_items,
+        "total_price": total_price,
+        "restaurant": {"id": restaurant.id, "name": restaurant.name} if restaurant else None,
+        "items": cart_items
+    }
