@@ -3,8 +3,10 @@ from typing import List, Optional
 from enum import Enum
 from datetime import datetime
 
+
 class OrderItemCreate(BaseModel):
     cart_item_id: int
+
 
 class OrderCreate(BaseModel):
     items: List[OrderItemCreate]
@@ -13,7 +15,9 @@ class OrderCreate(BaseModel):
     note: Optional[str] = ""
     address_id: int
 
+
 class OrderStatus(str, Enum):
+    pending = "Pending"
     to_pay = "To Pay"
     to_ship = "To Ship"
     to_receive = "To Receive"
@@ -21,14 +25,37 @@ class OrderStatus(str, Enum):
     cancelled = "Cancelled"
     return_refund = "Return Refund"
 
-class OrderOut(BaseModel):
-    id: int
-    restaurant: str
+
+STATUS_MAPPING = {
+    "pending": OrderStatus.pending,
+    "to pay": OrderStatus.to_pay,
+    "to_pay": OrderStatus.to_pay,
+    "to ship": OrderStatus.to_ship,
+    "to_ship": OrderStatus.to_ship,
+    "to receive": OrderStatus.to_receive,
+    "to_receive": OrderStatus.to_receive,
+    "completed": OrderStatus.completed,
+    "cancelled": OrderStatus.cancelled,
+    "can celled": OrderStatus.cancelled,
+    "return refund": OrderStatus.return_refund,
+    "return_refund": OrderStatus.return_refund
+}
+
+
+class OrderItemOut(BaseModel):
     foodName: str
-    size: str
+    size: Optional[str]
     toppings: List[str]
     quantity: int
-    total: int
+    price: float
+    image: str
+
+
+class OrderOut(BaseModel):
+    orderID: str
+    restaurant: str
+    total: float
     createdAt: datetime
     status: OrderStatus
-    image: str
+    items: List[OrderItemOut]
+    note: Optional[str] = None

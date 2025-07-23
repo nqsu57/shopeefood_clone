@@ -19,7 +19,8 @@ class Order(Base):
     total = Column(Float, default=0)
     status = Column(String, default="pending")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
+    note = Column(String(255), nullable=True)
+    
     address_id = Column(Integer, ForeignKey("addresses.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
     restaurant_id = Column(Integer, ForeignKey("restaurants.id"), nullable=False)
@@ -40,13 +41,6 @@ order_item_topping_table = Table(
 class OrderItem(Base):
     __tablename__ = "order_items"
 
-    # id = Column(Integer, primary_key=True, index=True)
-    # order_id = Column(Integer, ForeignKey("orders.id"))
-    # cart_item_id = Column(Integer, ForeignKey("cart_items.id"))
-
-    # order = relationship("Order", back_populates="items")
-    # cart_item = relationship("CartItem")
-
     id = Column(Integer, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"))
     food_id = Column(Integer, ForeignKey("food.id"))
@@ -66,3 +60,4 @@ class OrderItem(Base):
         secondary=order_item_topping_table,
         backref="order_items"
     )
+    item_total = Column(Float, nullable=False, default=0)
