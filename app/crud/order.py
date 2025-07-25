@@ -13,7 +13,6 @@ def create_order(db: Session, user_id: int, order_data: OrderCreate):
     if not cart_items:
         raise Exception("No valid cart items found")
 
-    # khởi tạo đơn
     order = Order(
         user_id=user_id,
         restaurant_id=cart_items[0].food.restaurant_id,
@@ -21,7 +20,7 @@ def create_order(db: Session, user_id: int, order_data: OrderCreate):
         shipping_fee=order_data.shipping_fee or 0,
         address_id=order_data.address_id,
         note=order_data.note,
-        total=0  # tính sau
+        total=0 
     )
     db.add(order)
     db.commit()

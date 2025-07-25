@@ -4,6 +4,7 @@ from app.schemas.user import AvatarUpdate
 from app.database.database import get_db
 from app.model.user import User
 from sqlalchemy.orm import Session
+
 avatar_update = APIRouter()
 
 @avatar_update.put("/users/{user_id}/avatar")
