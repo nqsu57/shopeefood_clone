@@ -7,18 +7,13 @@ from app.crud.auth import normalize_phone
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
+    normalized_phone = normalize_phone(user.phone)
+
     if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    if db.query(User).filter(User.phone == user.phone).first():
+    if db.query(User).filter(User.phone == normalized_phone).first():
         raise HTTPException(status_code=400, detail="Phone already registered")
 
     hashed_pw = pwd_context.hash(user.password)

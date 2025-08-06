@@ -14,3 +14,5 @@ bcrypt
 fastapi-mail
 requests
 httpx
+phonenumbers
+twilio

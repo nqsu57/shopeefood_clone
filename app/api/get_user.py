@@ -7,17 +7,18 @@ from sqlalchemy.orm import Session, joinedload
 from app.database.database import get_db
 
 
-get_user = APIRouter()
+get_user_router = APIRouter()
 
 # @get_user.get("/get_user", response_model=UserOut)
 # def get_user_info(current_user: User = Depends(get_current_user)):
 #     return current_user
 
-@get_user.get("/get_user", response_model=UserOut)
+@get_user_router.get("/get_user", response_model=UserOut)
 def get_user_info(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print("[DEBUG] current_user from token:", current_user)
     # Load user kèm addresses & địa chỉ liên quan
     user = (
         db.query(User)
@@ -32,6 +33,7 @@ def get_user_info(
         .filter(User.id == current_user.id)
         .first()
     )
+    print("[DEBUG] user found from DB:", user)
 
     default_address = (
         db.query(Address)

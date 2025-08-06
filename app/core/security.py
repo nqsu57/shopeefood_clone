@@ -1,3 +1,4 @@
+import re
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
@@ -22,7 +23,7 @@ def verify_password(plain, hashed):
     return pwd_context.verify(plain, hashed)
 
 def hash_password(password):
-    return pwd_context.hash(password)
+    return pwd_context.hash(password)               
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=30)):
     to_encode = data.copy()
@@ -39,22 +40,31 @@ def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        sub: str = payload.get("sub")  # email hoặc số điện thoại
+        if sub is None:
             raise HTTPException(status_code=401, detail="Token invalid")
     except JWTError:
         raise HTTPException(status_code=401, detail="Token invalid")
-    user = db.query(User).filter(User.email == email).first()
+
+    # Check nếu sub là số điện thoại (có +84)
+    if sub.startswith("+84"):
+        user = db.query(User).filter(User.phone == sub).first()
+    else:
+        user = db.query(User).filter(User.email == sub).first()
+
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    # return UserOut( email=user.email, phone=user.phone)
+
     return user
 
 
 # Set password via email
-def create_reset_token(email: str):
-    expire = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
-    return jwt.encode({"sub": email, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+def create_reset_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 def verify_reset_token(token: str):
     try:
