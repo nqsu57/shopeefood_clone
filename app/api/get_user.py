@@ -51,5 +51,7 @@ def get_user_info(
         "email": user.email,
         "gender": user.gender,
         "avatar_url": user.avatar_url,
-        "default_address": default_address
+        "default_address": default_address,
+        "is_verified": user.is_verified,
+        "role": user.role
     }

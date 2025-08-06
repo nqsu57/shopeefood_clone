@@ -11,6 +11,9 @@ from app.api.cart import cart_router
 from app.api.order_router import order_router
 from app.api.address import address_router
 from app.api.search import search_router
+from app.api.auth_router import auth_router
+from app.api.send_email import auth_mail_router
+from app.api.admin.users import admin_user_router
 from fastapi.middleware.cors import CORSMiddleware
 import app.model
 # from app.api.send_email import forgot_password_router
@@ -40,11 +43,6 @@ app.include_router(cart_router, prefix="/api")
 app.include_router(order_router, prefix="/api")
 app.include_router(address_router, prefix="/api")
 app.include_router(search_router, prefix="/api")
-
-
-# app.include_router(forgot_password_router, prefix="/api")
-# app.include_router(reset_password_router, prefix="/api")
-
-# app.include_router(change_password_user, prefix="/api")
-
-
+app.include_router(auth_router, prefix="/api")
+app.include_router(auth_mail_router, prefix="/api")
+app.include_router(admin_user_router, prefix="/api")
